@@ -16,6 +16,7 @@ router.get('/',async (ctx)=>{
 router.post('/doUpload', async (ctx)=>{
 
     //console.log('doUpload path:' + JSON.stringify( ctx.request.files ))
+
     var search = 'upload/'
 
    //var rootdir = conf.rootDirection[ conf.currentRoot]
@@ -46,9 +47,9 @@ router.post('/doUpload', async (ctx)=>{
                 let extname= path.extname( file_path).toLowerCase()
                //addobj.path =  conf.host +'/download?file=' +result + '&root=' + conf.currentRoot 
                 addobj.path = conf.host +'/upload/' +result
-                addobj.pdffilename = addobj.name.replace( extname , '.pdf' )
-       
-                if (extname !='.pdf'){
+              
+                
+                if (extname !='.pdf' && item.type.indexOf('image')<0 ){
 
                     let targname=file_path
 
@@ -63,10 +64,17 @@ router.post('/doUpload', async (ctx)=>{
                             if (err) return err;
                             console.log(file_path,' was deleted');
                         });
+
+                        addobj.pdffilename = addobj.name.replace( extname , '.pdf' )
+
                     } catch (error) {
                         err_msg=err_msg+',' + item.name
                     }
                     
+                }
+                else{
+                    addobj.pdffilename = item.name
+
                 }
  
                 url[key].push(addobj)
@@ -89,9 +97,9 @@ router.post('/doUpload', async (ctx)=>{
 
             let extname= path.extname( file_path).toLowerCase()
 
-            addobj.pdffilename = addobj.name.replace( extname , '.pdf' )
+          
 
-            if (extname !='.pdf'){
+            if (extname !='.pdf' && data.type.indexOf('image')<0  ){
                 let targname =file_path
                 try {
                     targname= await execshell.changepdf( file_path)
@@ -106,10 +114,15 @@ router.post('/doUpload', async (ctx)=>{
                         console.log(file_path,' was deleted');
                     });
 
+                    addobj.pdffilename = addobj.name.replace( extname , '.pdf' )
+
                 } catch (error) {
                     err_msg=err_msg+',' + data.name
                 }
    
+            }
+            else {
+                addobj.pdffilename = addobj.name
             }
            
             url[key] = addobj
